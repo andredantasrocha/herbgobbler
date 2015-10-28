@@ -88,7 +88,7 @@ class RailsTranslationStore < BaseTranslationStore
 
   
   def escape( key )
-    key.gsub( /"/, '\"' ).gsub( "\n", "\\n" )
+    key.gsub( /"/, '\"' ).gsub( "\n", ' ' ).gsub(/\s+/, ' ')
   end
   
 end
