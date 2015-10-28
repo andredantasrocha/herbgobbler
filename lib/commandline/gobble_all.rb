@@ -50,15 +50,10 @@ class GobbleAll
 
     Dir["#{rails_view_directory}/**/*#{@extension}" ].each do |full_erb_file_path|
 
-      if !(full_erb_file_path.start_with? '/Users/andredantasrocha/src/marketplace/app/views/item') &&
-        !(full_erb_file_path.start_with? '/Users/andredantasrocha/src/marketplace/app/views/buying')
+      if (/marketplace\/app\/views\/item/) !~ full_erb_file_path && (/marketplace\/app\/views\/buying/) !~ full_erb_file_path
         puts "Skipping #{full_erb_file_path}"
         next
       end
-
-      # if /gone\.html\.erb$/ !~full_erb_file_path
-      #   next
-      # end
 
       yml_relative_path = full_erb_file_path.gsub("#{@rails_root}/app/", '')
       en_yml_relative_path = yml_relative_path.gsub('html.erb', 'en.yml')
@@ -72,15 +67,26 @@ class GobbleAll
       erb_file = ErbFile.load( full_erb_file_path )
       erb_file.extract_text( text_extractor )
 
-      File.open(full_erb_file_path, 'w') {|f| f.write(erb_file.to_s) }
-      puts "Wrote #{full_erb_file_path}"
-
-      yml_file_dir  = File.dirname(full_yml_file_path)
-      FileUtils.mkdir_p(yml_file_dir) unless File.exists?(yml_file_dir)
-
-      File.open(full_yml_file_path, 'w') {|f| f.write(rails_translation_store.serialize) }
-      puts "Wrote #{full_yml_file_path}"
+      write_files_if_needed(erb_file, full_erb_file_path, full_yml_file_path, rails_translation_store)
     end
   end
-  
+
+  def write_files_if_needed(erb_file, full_erb_file_path, full_yml_file_path, rails_translation_store)
+    yml_contents = rails_translation_store.serialize
+    if some_content? yml_contents
+      yml_file_dir = File.dirname(full_yml_file_path)
+      FileUtils.mkdir_p(yml_file_dir) unless File.exists?(yml_file_dir)
+
+      File.open(full_yml_file_path, 'w') { |f| f.write(yml_contents) }
+      puts "Wrote #{full_yml_file_path}"
+
+      File.open(full_erb_file_path, 'w') { |f| f.write(erb_file.to_s) }
+      puts "Wrote #{full_erb_file_path}"
+    end
+  end
+
+  def some_content?(content)
+    "#{content} ".strip.chomp != 'en:'
+  end
+
 end
