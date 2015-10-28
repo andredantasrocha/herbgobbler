@@ -50,8 +50,12 @@ class GobbleAll
 
     Dir["#{rails_view_directory}/**/*#{@extension}" ].each do |full_erb_file_path|
 
-      if (/marketplace\/app\/views\/item/) !~ full_erb_file_path && (/marketplace\/app\/views\/buying/) !~ full_erb_file_path
-        puts "Skipping #{full_erb_file_path}"
+      # if (/marketplace\/app\/views\/item/) !~ full_erb_file_path && (/marketplace\/app\/views\/buying/) !~ full_erb_file_path
+      #   puts "Skipping #{full_erb_file_path}"
+      #   next
+      # end
+
+      if /app\/views\/item\/index\.html\.erb/ !~ full_erb_file_path && /item\/author_disabled\.html\.erb/ !~ full_erb_file_path
         next
       end
 
@@ -77,11 +81,12 @@ class GobbleAll
       yml_file_dir = File.dirname(full_yml_file_path)
       FileUtils.mkdir_p(yml_file_dir) unless File.exists?(yml_file_dir)
 
-      %w(en es pt ru).each do |language|
+      # %w(en es pt ru).each do |language|
+      language = 'en'
         yml = full_yml_file_path.gsub(/\.en\.yml/, ".#{language}.yml")
         File.open(yml, 'w') { |f| f.write(yml_contents) }
         puts "Wrote #{yml}"
-      end
+      # end
 
       File.open(full_erb_file_path, 'w') { |f| f.write(erb_file.to_s) }
       puts "Wrote #{full_erb_file_path}"
