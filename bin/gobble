@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require 'herbgobbler'
+require_relative '../lib/herbgobbler'
 require 'optparse'
 
 def print_usage
