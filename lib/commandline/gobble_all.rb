@@ -77,8 +77,11 @@ class GobbleAll
       yml_file_dir = File.dirname(full_yml_file_path)
       FileUtils.mkdir_p(yml_file_dir) unless File.exists?(yml_file_dir)
 
-      File.open(full_yml_file_path, 'w') { |f| f.write(yml_contents) }
-      puts "Wrote #{full_yml_file_path}"
+      %w(en es pt ru).each do |language|
+        yml = full_yml_file_path.gsub(/\.en\.yml/, ".#{language}.yml")
+        File.open(yml, 'w') { |f| f.write(yml_contents) }
+        puts "Wrote #{yml}"
+      end
 
       File.open(full_erb_file_path, 'w') { |f| f.write(erb_file.to_s) }
       puts "Wrote #{full_erb_file_path}"

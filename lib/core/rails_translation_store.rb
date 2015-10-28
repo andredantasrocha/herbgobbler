@@ -71,7 +71,7 @@ class RailsTranslationStore < BaseTranslationStore
         end
         whitespace_depth += 2
       end
-      to_return << "#{build_whitespace( 2 + 2 * context_array.length )}#{key}: \"#{escape(value)}\"\n"
+      to_return << "#{build_whitespace( 2 + 2 * context_array.length )}#{key}: #{escape(value)}\n"
       last_context_array = context_array
     end
     
@@ -88,7 +88,7 @@ class RailsTranslationStore < BaseTranslationStore
 
   
   def escape( key )
-    key.gsub( /"/, '\"' ).gsub( "\n", ' ' ).gsub(/\s+/, ' ')
+    key.gsub( "\n", ' ' ).gsub(/\s+/, ' ')
   end
   
 end
