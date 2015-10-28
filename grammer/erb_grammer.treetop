@@ -3,6 +3,7 @@ grammar ERBGrammer
              ( 
                ignorable_javascript_tag /
                ignorable_google_analytics /
+               ignorable_style_tag /
                ignorable_microdata_body /
                processing_instruction /
                erb_string /
@@ -224,6 +225,19 @@ grammar ERBGrammer
 
                 def node_name
                    "ignorable_google_analytics"
+                end
+             }
+        end
+
+        rule ignorable_style_tag
+             '<style>' (!'</style>' .)+ <IgnorableTagNode>
+             {
+                def can_be_combined?
+                    false
+                end
+
+                def node_name
+                   "ignorable_style_tag"
                 end
              }
         end
