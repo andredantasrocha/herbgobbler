@@ -2,7 +2,7 @@ class HerbErbTextCallNode
 
   def initialize( text_values = [], key_store = [], prepend = nil, postpend = nil, variables = [], include_markup = true )
     @text_values = text_values
-    @prepend = prepend
+    @prepend = prepend == "t '." ? "t('." : prepend
     @postpend = postpend
     @key_store = key_store
     @key_value = nil
@@ -36,7 +36,12 @@ class HerbErbTextCallNode
   
   def text_value
     string_to_return = "#{@prepend}#{key_value}#{@postpend}"
-    string_to_return += ", #{@variables.join( ', ' )}" unless @variables.empty?
+    if @variables.empty?
+      string_to_return += ')' if @prepend == "t('."
+    else
+      string_to_return += ", #{@variables.join( ', ' )}"
+      string_to_return += ')' if @prepend == "t('."
+    end
     if( @include_markup )
       "<%= #{string_to_return} %>"
     else
