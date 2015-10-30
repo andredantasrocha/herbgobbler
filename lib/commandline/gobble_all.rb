@@ -48,7 +48,7 @@ class GobbleAll
   def execute_i18n
     rails_view_directory = "#{@rails_root}/app/views"
 
-    Dir["#{rails_view_directory}/**/*" ].each do |full_erb_file_path|
+    Dir["#{rails_view_directory}/**/*#{@extension}" ].each do |full_erb_file_path|
       unless should_process?(full_erb_file_path)
         next
       end
