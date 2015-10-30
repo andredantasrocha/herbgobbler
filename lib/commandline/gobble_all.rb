@@ -49,13 +49,7 @@ class GobbleAll
     rails_view_directory = "#{@rails_root}/app/views"
 
     Dir["#{rails_view_directory}/**/*#{@extension}" ].each do |full_erb_file_path|
-
-      # if (/marketplace\/app\/views\/item/) !~ full_erb_file_path && (/marketplace\/app\/views\/buying/) !~ full_erb_file_path
-      #   puts "Skipping #{full_erb_file_path}"
-      #   next
-      # end
-
-      if /app\/views\/item\/index\.html\.erb/ !~ full_erb_file_path && /item\/author_disabled\.html\.erb/ !~ full_erb_file_path
+      unless should_process?(full_erb_file_path)
         next
       end
 
@@ -75,18 +69,42 @@ class GobbleAll
     end
   end
 
+  def should_process?(file)
+    process = false
+    keywords = %w(
+      /views/buying/_gateway_outage.
+      /views/buying/confirmation/_page.
+      /views/buying/email/_order_confirmation.
+      /views/buying/email/order_confirmation/_order_entry_summary.
+      /views/cart/_configure_before_adding_modal.
+      /views/cart/_entry.
+      /views/cart/_footer.
+      /views/cart/_header.
+      /views/cart/_sidebar.
+      /views/item/_edit_basic_details.
+      /views/item/_grid.
+      /views/item/_license_pricing.
+      /views/item/index.
+      /views/item/sidebar/_copyright.
+      /views/item/sidebar/_pricebox.
+    )
+    keywords.each do |keyword|
+      if file.include? keyword
+        process = true
+        break
+      end
+    end
+    process
+  end
+
   def write_files_if_needed(erb_file, full_erb_file_path, full_yml_file_path, rails_translation_store)
     yml_contents = rails_translation_store.serialize
     if some_content? yml_contents
       yml_file_dir = File.dirname(full_yml_file_path)
       FileUtils.mkdir_p(yml_file_dir) unless File.exists?(yml_file_dir)
 
-      # %w(en es pt ru).each do |language|
-      language = 'en'
-        yml = full_yml_file_path.gsub(/\.en\.yml/, ".#{language}.yml")
-        File.open(yml, 'w') { |f| f.write(yml_contents) }
-        puts "Wrote #{yml}"
-      # end
+      File.open(full_yml_file_path, 'w') { |f| f.write(yml_contents) }
+      puts "Wrote #{full_yml_file_path}"
 
       File.open(full_erb_file_path, 'w') { |f| f.write(erb_file.to_s) }
       puts "Wrote #{full_erb_file_path}"
